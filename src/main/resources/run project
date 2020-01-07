@@ -1,0 +1,60 @@
+
+C:\Users\cboosa>docker pull cassandra
+Using default tag: latest
+latest: Pulling from library/cassandra
+804555ee0376: Pull complete                                                                                             f62a86f474e7: Pull complete                                                                                             b08b2c5fa0f7: Pull complete                                                                                             462a01774618: Pull complete                                                                                             4a4246974523: Pull complete                                                                                             bb514a91a0e3: Pull complete                                                                                             f8a11c726003: Pull complete                                                                                             98440d0d3ef0: Pull complete                                                                                             7419891d3b45: Pull complete                                                                                             c2bdf673f50c: Pull complete                                                                                             Digest: sha256:0169fcc29fc49c0373bfb887d5e4c772ccf54da6ec36b1037b98ddd28b4cf6ce
+Status: Downloaded newer image for cassandra:latest
+
+C:\Users\cboosa>docker run  -p 9042:9042 -d cassandra
+9a44cce3e77799654eec001229141e6bdab9d2ec04fabb1782b382db1edb2c77
+
+C:\Users\cboosa>docker ps
+CONTAINER ID        IMAGE                                                        COMMAND                  CREATED             STATUS              PORTS                                                       NAMES
+9a44cce3e777        cassandra                                                    "docker-entrypoint..."   16 seconds ago      Up 15 seconds       7000-7001/tcp, 7199/tcp, 9160/tcp, 0.0.0.0:9042->9042/tcp   clever_lovelace
+4bfb159c8927        boosachandu/spring-boot-websocket-chat-demo:0.0.1-SNAPSHOT   "java -Djava.secur..."   7 days ago          Up 7 days           0.0.0.0:5001->8080/tcp                                      amazing_euclid
+1d4029ef1094        boosachandu/spring-boot-websocket-chat-demo:0.0.1-SNAPSHOT   "java -Djava.secur..."   7 days ago          Up 7 days           0.0.0.0:5000->8080/tcp                                      modest_goodall
+b1846ebcc08a        nginx                                                        "nginx -g 'daemon ..."   8 days ago          Up 8 days           0.0.0.0:80->80/tcp                                          webserver
+
+
+C:\Users\cboosa>docker exec -it 9a44cce3e777 bash
+root@9a44cce3e777:/# cqlsh
+Connected to Test Cluster at 127.0.0.1:9042.
+[cqlsh 5.0.1 | Cassandra 3.11.5 | CQL spec 3.4.4 | Native protocol v4]
+Use HELP for help.
+cqlsh> CREATE KEYSPACE demo_keyspace WITH replication = {'class':'SimpleStrategy', 'replication_factor' : 3};
+cqlsh> describe demo_keyspace;
+
+CREATE KEYSPACE demo_keyspace WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '3'}  AND durable_writes = true;
+
+CREATE TABLE demo_keyspace.product (
+    id uuid PRIMARY KEY,
+    description text,
+    imageurl text,
+    price decimal
+) WITH bloom_filter_fp_chance = 0.01
+    AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'}
+    AND comment = ''
+    AND compaction = {'class': 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy', 'max_threshold': '32', 'min_threshold': '4'}
+    AND compression = {'chunk_length_in_kb': '64', 'class': 'org.apache.cassandra.io.compress.LZ4Compressor'}
+    AND crc_check_chance = 1.0
+    AND dclocal_read_repair_chance = 0.1
+    AND default_time_to_live = 0
+    AND gc_grace_seconds = 864000
+    AND max_index_interval = 2048
+    AND memtable_flush_period_in_ms = 0
+    AND min_index_interval = 128
+    AND read_repair_chance = 0.0
+    AND speculative_retry = '99PERCENTILE';
+
+cqlsh> use demo_keyspace:
+   ... ;
+Improper use command.
+cqlsh> use demo_keyspace;
+cqlsh:demo_keyspace> select * from product;
+
+ id                                   | description | imageurl | price
+--------------------------------------+-------------+----------+-------
+ 3fa85f64-5717-4562-b3fc-2c963f66afa6 |        test |   string |    10
+
+(1 rows)
+cqlsh:demo_keyspace>
