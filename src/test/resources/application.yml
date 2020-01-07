@@ -1,0 +1,15 @@
+spring:
+  data:
+    cassandra:
+      keyspace-name: demo_keyspace # We need to create keyspace manually from cassandra console
+      cluster-name: Test Cluster   # This is optional field
+      contact-points:
+        - 127.0.0.1                # IP Address where Cassandra is running
+      port: 32774
+      schema-action: create_if_not_exists
+
+logging:
+  level:
+    org.springframework.data.cassandra.core.cql: DEBUG
+    com.example: DEBUG
+    web: DEBUG

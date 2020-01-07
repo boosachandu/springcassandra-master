@@ -1,0 +1,9 @@
+spring:
+  profiles:
+    active: dev
+  jpa:
+    open-in-view: false
+logging:
+  level:
+    web: info
+    com.example: debug
